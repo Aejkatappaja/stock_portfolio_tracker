@@ -12,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,6 +26,10 @@ func main(){
 	}
 
 	router := gin.Default()
+
+	router.Use(cors.Default())
+
+
 
 	transactionRepository := repository.NewTransactionRepository(db.DB)
 	transactionService := service.NewTransactionService(transactionRepository)
