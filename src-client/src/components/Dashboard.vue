@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-gray-100 pb-6">
+  <main class="min-h-screen pb-6">
     <div class="mx-auto max-w-7xl rounded-lg bg-white p-6 shadow-lg">
       <div class="mb-6 flex items-center justify-between">
         <h4 class="text-xl font-semibold text-gray-700">Transactions</h4>
@@ -20,9 +20,9 @@
               </th>
             </tr>
           </thead>
-          <tbody v-if="data">
+          <tbody v-if="transactions.length >= 1">
             <tr
-              v-for="t in data.transactions"
+              v-for="t in transactions"
               :key="t.id"
               class="border-b border-gray-300 hover:bg-gray-50"
             >
@@ -50,40 +50,67 @@
             </tr>
           </tbody>
         </table>
-        <button @click="getAllTransactions" class="text-black">test</button>
       </div>
     </div>
   </main>
 </template>
 
-<script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { ref, onMounted } from "vue";
-import { getTransactions, deleteTransaction } from "../utils/get-transactions";
-import type { Transactions } from "../utils/get-transactions";
+<script lang="ts">
+import { defineComponent } from "vue";
 import { API } from "../utils/api";
+import axios from "axios";
 
-const rows: string[] = [
-  "ID",
-  "Type",
-  "Ticker",
-  "Volume",
-  "Price",
-  "Date",
-  "Actions",
-];
-
-const data = ref<Transactions | null>(null);
-
-async function getAllTransactions() {
-  await getTransactions<Transactions>(API.GET_TRANSACTION, data);
+interface Transaction {
+  id: number;
+  type: string;
+  ticker: string;
+  volume: number;
+  price: number;
+  date: string;
 }
 
-function deleteTransactionById(id: number) {
-  if (confirm("Are you sure you want to remove this transaction ?"))
-    deleteTransaction(API.DELETE_TRANSACTION, id);
-  getAllTransactions();
-}
+export default defineComponent({
+  name: "dashboard",
 
-onMounted(getAllTransactions);
+  data() {
+    return { transactions: [] as Transaction[] };
+  },
+
+  methods: {
+    async getTransactions() {
+      axios
+        .get(API.GET_TRANSACTION)
+        .then((res) => {
+          this.transactions = res.data.transactions;
+        })
+        .catch((e) => {
+          console.error("Error fetching transactions", e);
+        });
+    },
+
+    async deleteTransactionById(id: number) {
+      axios
+        .delete(API.DELETE_TRANSACTION, { data: { id: Number(id) } })
+        .then((res) => {
+          alert(res.data.message);
+          this.getTransactions();
+        })
+        .catch((e) => {
+          if (e.response) {
+            if (e.response.status == 400) alert(e.response.data.error);
+            if (e.response.status == 500) alert(e.response.data.error);
+          }
+        });
+    },
+  },
+
+  computed: {
+    rows() {
+      return ["ID", "Type", "Ticker", "Volume", "Price", "Date", "Actions"];
+    },
+  },
+  mounted() {
+    this.getTransactions();
+  },
+});
 </script>
