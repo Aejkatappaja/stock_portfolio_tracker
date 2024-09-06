@@ -3,11 +3,11 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-800 p-4 text-white">
+  <div class="min-h-screen bg-[#292828] p-4 text-white">
     <div>
       <RouterLink
         to="/"
-        class="px-1 text-lg font-semibold transition duration-300 hover:text-gray-300"
+        class="px-1 text-lg font-semibold text-[#a9b665] transition duration-300 hover:text-gray-300"
         >Dashboard
       </RouterLink>
     </div>

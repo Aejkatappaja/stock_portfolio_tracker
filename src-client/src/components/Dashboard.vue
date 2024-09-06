@@ -5,7 +5,7 @@
         <h4 class="text-xl font-semibold text-gray-700">Transactions</h4>
         <RouterLink
           to="/transactions/create"
-          class="rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white shadow-md hover:bg-blue-600"
+          class="rounded-lg bg-green-500 px-4 py-2 font-semibold text-white shadow-md hover:bg-green-600"
           >Add Transaction</RouterLink
         >
       </div>
@@ -36,8 +36,8 @@
               <td class="flex space-x-2 px-6 py-3">
                 <RouterLink
                   :to="{ path: `/transaction/${t.id}/edit` }"
-                  class="rounded-lg bg-green-500 px-4 py-2 font-semibold text-white shadow-lg hover:bg-green-600"
-                  >EDIT</RouterLink
+                  class="rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white shadow-lg hover:bg-blue-600"
+                  >Edit</RouterLink
                 >
                 <button
                   @click="deleteTransactionById(t.id)"
@@ -81,7 +81,9 @@ export default defineComponent({
       axios
         .get(API.GET_TRANSACTION)
         .then((res) => {
-          this.transactions = res.data.transactions;
+          this.transactions = res.data.transactions.sort(
+            (a: Transaction, b: Transaction) => a.id - b.id,
+          );
         })
         .catch((e) => {
           console.error("Error fetching transactions", e);
